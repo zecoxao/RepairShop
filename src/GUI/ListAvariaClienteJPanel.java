@@ -1,16 +1,3 @@
-package GUI;
-
-import HelperDB.DBAccessObj;
-import ReparacaoBLL.Cliente;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JPanel;
-import org.jdesktop.application.FrameView;
-
-
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -22,41 +9,56 @@ import org.jdesktop.application.FrameView;
  * Created on 16/Abr/2011, 9:37:37
  */
 
+package GUI;
 
 
-
-
+import java.sql.Date;
+import ReparacaoBLL.Avaria;
+import HelperDB.*;
+import ReparacaoBLL.AvariaCliente;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JPanel;
+import ReparacaoBLL.Cliente;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JFrame;
+import org.jdesktop.application.FrameView;
+//import librarySystem.BookJPanel;
+//import librarysystem.*;
 
 /**
  *
  * @author Miguel
  */
-public class ListarClientesJPanel extends javax.swing.JPanel {
+public class ListAvariaClienteJPanel extends javax.swing.JPanel {
 
     private RepairShopView parent = null;
     private DBAccessObj dbo;
+    private int AvariaID = 0;
     private int ClienteID = 0;
     private int linhaSeleccionada = -1;
+    public static int id_avaria_maleavel = 0;
+    public static int id_cliente_maleavel = 0;
 
     /** Creates new form ListBooksJPanel */
-    public ListarClientesJPanel(FrameView parent, DBAccessObj dbo) {
+    public ListAvariaClienteJPanel(FrameView parent, DBAccessObj dbo) {
         initComponents();
 
         this.parent = (RepairShopView) parent;
         this.dbo = dbo;
 
         try {
-            ResultSet rsClientes = Cliente.retrieveAllClientes(new DBAccessObj());
+            ResultSet rsAvariasClientes = AvariaCliente.retrieveAll(new DBAccessObj());
             limparJTableAvarias();
-            if(rsClientes!=null){
+            if(rsAvariasClientes!=null){
                 javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel)jTable1.getModel();
-                while(rsClientes.next()){
-                    String nome = ((String)rsClientes.getString("nome"));
-                    String equipamento = ((String)rsClientes.getString("equipamento"));
-                    int contacto = rsClientes.getInt("contacto");
-                    Double entrada = rsClientes.getDouble("entrada");
-                    Double pagamento_caucao = rsClientes.getDouble("pagamento_caucao");
-                    model1.addRow(new Object[]{nome, equipamento, contacto, entrada, pagamento_caucao});
+                while(rsAvariasClientes.next()){
+                    int cliente = rsAvariasClientes.getInt("cliente");
+                    int avaria = rsAvariasClientes.getInt("avaria");
+                    Date data_entrega = rsAvariasClientes.getDate("data_entrega");
+                    Date data_reparacao = rsAvariasClientes.getDate("data_reparacao");
+                    model1.addRow(new Object[]{cliente,avaria,data_entrega,data_reparacao});
                 }
             }
         } catch (SQLException ex) {
@@ -81,7 +83,7 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -90,14 +92,14 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Nome", "Equipamento", "Contacto", "Entrada", "Pagamento_Caucao"
+                "Cliente", "Avaria", "Data_Entrega", "Data_Reparação"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -120,11 +122,11 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jButton2.setText("Editar");
-        jButton2.setName("jButton2"); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButton1.setText("Editar");
+        jButton1.setName("jButton1"); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -136,7 +138,7 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -144,14 +146,46 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addContainerGap(23, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
+        
+}//GEN-LAST:event_jTable1MouseReleased
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        try{
+            this.AvariaID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada,1).toString());
+        this.ClienteID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada,0).toString());
+        id_avaria_maleavel = this.AvariaID;
+        id_cliente_maleavel = this.ClienteID;
+        System.out.println("ID da Avaria:" + this.AvariaID);
+        System.out.println("ID do Cliente:" + this.ClienteID);
+        //
+        EditaAdicionaJPanel painel;
+        try {
+            painel = new EditaAdicionaJPanel(this.parent, this, this.dbo, this.AvariaID, this.ClienteID);
+            ((RepairShopView)this.parent).switchPanels((JPanel)this, (JPanel)painel);
+        //
+        jTable1.clearSelection();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListAvariaClienteJPanel.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
+        } catch (ArrayIndexOutOfBoundsException e){
+            
+        }
+        
+        //
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-// TODO add your handling code here:
+    // TODO add your handling code here:
         if(jTable1.getSelectedRow() < 0){
             this.linhaSeleccionada = -1;
         }
@@ -160,31 +194,9 @@ private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:eve
         }
 }//GEN-LAST:event_jTable1MouseClicked
 
-private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    this.ClienteID = this.linhaSeleccionada + 1;
-    System.out.println("ID do Cliente:" + this.ClienteID);
-        //
-        EditaAdicionaJPanel painel;
-        try {
-            painel = new EditaAdicionaJPanel(this.parent, this, this.dbo, 0, this.ClienteID);
-            ((RepairShopView)this.parent).switchPanels((JPanel)this, (JPanel)painel);
-            jTable1.clearSelection();
-        } catch (SQLException ex) {
-            Logger.getLogger(ListarClientesJPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //
-        
-        //
-        
-}//GEN-LAST:event_jButton2ActionPerformed
-
-private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {
-    
-}   
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables

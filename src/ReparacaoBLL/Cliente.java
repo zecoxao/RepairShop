@@ -135,7 +135,7 @@ public class Cliente {
 
     public void update() {
         //nome,equipamento,contacto,entrada,pagamento_caucao
-        String sqlCommand = "UPDATE Cliente SET nome = '" + this.nome + "', equipamento = '" + this.equipamento + "', contacto = '" + this.contacto + "', entrada = '" + this.entrada + "', pagamento_caucao = '" + this.pagamento_caucao + "' WHERE id = '" + this.cliente_id + "'";
+        String sqlCommand = "UPDATE Cliente SET nome = '" + this.nome + "', equipamento = '" + this.equipamento + "', contacto = '" + this.contacto + "', entrada = '" + this.entrada + "', pagamento_caucao = '" + this.pagamento_caucao + "' WHERE cliente_id = '" + this.cliente_id + "'";
         this.dbo.executeSQL(sqlCommand);
         
     }

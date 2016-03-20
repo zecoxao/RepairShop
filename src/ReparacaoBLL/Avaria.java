@@ -16,6 +16,16 @@ public class Avaria {
     //
     private DBAccessObj dbo;
 
+    public int getOutro() {
+        return outro;
+    }
+
+    public void setOutro(int outro) {
+        this.outro = outro;
+    }
+
+    
+    
     public int getAvaria_id() {
         return avaria_id;
     }
@@ -65,14 +75,14 @@ public class Avaria {
 
 
     public void create() throws SQLException{
-        String sqlCommand = "INSERT INTO Avaria (descricao,outro,descricao_outro) VALUES('" + this.descricao + "', '" + this.outro + "', '" + this.descricao_outro + "')";
+        String sqlCommand = "INSERT INTO Avaria (descricao,outro,descricao_outro) VALUES('" + this.descricao + "', " + this.outro + ", '" + this.descricao_outro + "')";
         
         
         this.dbo.executeSQL(sqlCommand);
     }
 
     public void retrieve(int id) throws SQLException{
-        String sqlCommand =  "SELECT descricao,outro,descricao_outro FROM Avaria WHERE ID = '" + id + "'";
+        String sqlCommand =  "SELECT descricao,outro,descricao_outro FROM Avaria WHERE avaria_id = '" + id + "'";
         ResultSet avaria;
 
         //this.dbo.beginTran();

@@ -15,6 +15,8 @@ import java.util.*;
 import java.sql.*;
 import ReparacaoBLL.Avaria;
 import HelperDB.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import ReparacaoBLL.Cliente;
 import javax.swing.JFrame;
@@ -147,13 +149,21 @@ public class ListAvariasJPanel extends javax.swing.JPanel {
 }//GEN-LAST:event_jTable1MouseReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.AvariaID = this.linhaSeleccionada;
+        this.AvariaID = this.linhaSeleccionada +1;
+        System.out.println("ID da Avaria:" + this.AvariaID);
         //
-        EditaAdicionaJPanel painel = new EditaAdicionaJPanel(this.parent, this, this.dbo, this.AvariaID, 0);
-        //
-        ((RepairShopView)this.parent).switchPanels((JPanel)this, (JPanel)painel);
+        EditaAdicionaJPanel painel;
+        try {
+            painel = new EditaAdicionaJPanel(this.parent, this, this.dbo, this.AvariaID, 0);
+            ((RepairShopView)this.parent).switchPanels((JPanel)this, (JPanel)painel);
         //
         jTable1.clearSelection();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListAvariasJPanel.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
+        //
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
