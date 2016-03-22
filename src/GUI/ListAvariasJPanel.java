@@ -48,9 +48,10 @@ public class ListAvariasJPanel extends javax.swing.JPanel {
             if(rsAvarias!=null){
                 javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel)jTable1.getModel();
                 while(rsAvarias.next()){
+                    int id = rsAvarias.getInt("avaria_id");
                     String descricao_ = ((String)rsAvarias.getString("descricao"));
                     String descricao_outro = ((String)rsAvarias.getString("descricao_outro"));
-                    model1.addRow(new Object[]{descricao_, descricao_outro});
+                    model1.addRow(new Object[]{id, descricao_, descricao_outro});
                 }
             }
         } catch (SQLException ex) {
@@ -84,14 +85,14 @@ public class ListAvariasJPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Descricao", "Descricao_Outro"
+                "Id", "Descricao", "Descricao_Outro"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -149,7 +150,10 @@ public class ListAvariasJPanel extends javax.swing.JPanel {
 }//GEN-LAST:event_jTable1MouseReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.AvariaID = this.linhaSeleccionada +1;
+        try{
+            
+        
+        this.AvariaID = Integer.parseInt(jTable1.getModel().getValueAt(this.linhaSeleccionada, 0).toString());
         System.out.println("ID da Avaria:" + this.AvariaID);
         //
         EditaAdicionaJPanel painel;
@@ -162,7 +166,9 @@ public class ListAvariasJPanel extends javax.swing.JPanel {
             Logger.getLogger(ListAvariasJPanel.class.getName()).log(Level.SEVERE, null, ex);
             
         }
-        //
+        }catch (Exception e){
+            
+        }
         
     }//GEN-LAST:event_jButton1ActionPerformed
 

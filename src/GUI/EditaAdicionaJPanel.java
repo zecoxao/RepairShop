@@ -113,7 +113,7 @@ public class EditaAdicionaJPanel extends JPanel {
             jTextField5.setText(cliente.getNome());
             jTextField1.setText(cliente.getEquipamento());
             jTextField2.setText("" + cliente.getContacto());
-            jTextField3.setText("" + cliente.getEntrada());
+            jTextField3.setText("" + cliente.getOrcamento());
             jTextField4.setText("" + cliente.getPagamento_caucao());
         }
 
@@ -190,7 +190,7 @@ public class EditaAdicionaJPanel extends JPanel {
 
         jLabel5.setText("Contacto:");
 
-        jLabel6.setText("Entrada:");
+        jLabel6.setText("Orçamento:");
 
         jLabel7.setText("Pagamento de Caução:");
 
@@ -495,7 +495,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     cliente.setNome(jTextField5.getText().toString());
     cliente.setEquipamento(jTextField1.getText().toString());
     cliente.setContacto(Integer.parseInt(jTextField2.getText().toString()));
-    cliente.setEntrada(Double.parseDouble(jTextField3.getText().toString()));
+    cliente.setOrcamento(Double.parseDouble(jTextField3.getText().toString()));
     cliente.setPagamento_caucao(Double.parseDouble(jTextField4.getText().toString()));
     try {
         cliente.create();
@@ -527,7 +527,7 @@ private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     cliente.setNome(jTextField5.getText().toString());
     cliente.setEquipamento(jTextField1.getText().toString());
     cliente.setContacto(Integer.parseInt(jTextField2.getText().toString()));
-    cliente.setEntrada(Double.parseDouble(jTextField3.getText().toString()));
+    cliente.setOrcamento(Double.parseDouble(jTextField3.getText().toString()));
     cliente.setPagamento_caucao(Double.parseDouble(jTextField4.getText().toString()));
     cliente.setCliente_id(cliente_id);
     cliente.update();
@@ -561,7 +561,7 @@ private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     jTextField5.setText(cliente.getNome());
     jTextField1.setText(cliente.getEquipamento());
     jTextField2.setText("" + cliente.getContacto());
-    jTextField3.setText("" + cliente.getEntrada());
+    jTextField3.setText("" + cliente.getOrcamento());
     jTextField4.setText("" + cliente.getPagamento_caucao());
 }//GEN-LAST:event_jButton11ActionPerformed
 

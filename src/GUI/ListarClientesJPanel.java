@@ -51,12 +51,13 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
             if(rsClientes!=null){
                 javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel)jTable1.getModel();
                 while(rsClientes.next()){
+                    int id = rsClientes.getInt("cliente_id");
                     String nome = ((String)rsClientes.getString("nome"));
                     String equipamento = ((String)rsClientes.getString("equipamento"));
                     int contacto = rsClientes.getInt("contacto");
-                    Double entrada = rsClientes.getDouble("entrada");
+                    Double orcamento = rsClientes.getDouble("orcamento");
                     Double pagamento_caucao = rsClientes.getDouble("pagamento_caucao");
-                    model1.addRow(new Object[]{nome, equipamento, contacto, entrada, pagamento_caucao});
+                    model1.addRow(new Object[]{id,nome, equipamento, contacto, orcamento, pagamento_caucao});
                 }
             }
         } catch (SQLException ex) {
@@ -90,14 +91,14 @@ public class ListarClientesJPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Nome", "Equipamento", "Contacto", "Entrada", "Pagamento_Caucao"
+                "Id", "Nome", "Equipamento", "Contacto", "Orçamento", "Pagamento_Caucao"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -161,7 +162,10 @@ private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:eve
 }//GEN-LAST:event_jTable1MouseClicked
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    this.ClienteID = this.linhaSeleccionada + 1;
+    try{
+        
+    
+    this.ClienteID = Integer.parseInt(jTable1.getModel().getValueAt(this.linhaSeleccionada, 0).toString());
     System.out.println("ID do Cliente:" + this.ClienteID);
         //
         EditaAdicionaJPanel painel;
@@ -175,7 +179,9 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         //
         
         //
-        
+       }catch (Exception e){
+           
+       } 
 }//GEN-LAST:event_jButton2ActionPerformed
 
 private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {

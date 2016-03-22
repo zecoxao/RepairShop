@@ -82,7 +82,7 @@ public class Avaria {
     }
 
     public void retrieve(int id) throws SQLException{
-        String sqlCommand =  "SELECT descricao,outro,descricao_outro FROM Avaria WHERE avaria_id = '" + id + "'";
+        String sqlCommand =  "SELECT * FROM Avaria WHERE avaria_id = '" + id + "'";
         ResultSet avaria;
 
         //this.dbo.beginTran();
@@ -100,7 +100,7 @@ public class Avaria {
 
     public static ResultSet retrieveAllAvarias(DBAccessObj dbo) throws SQLException{
 
-        String sqlCommand = "SELECT descricao,outro,descricao_outro FROM avaria";
+        String sqlCommand = "SELECT * FROM avaria";
         ResultSet avarias;
 
         dbo.openConnection();

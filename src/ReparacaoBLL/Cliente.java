@@ -15,13 +15,13 @@ import HelperDB.*;
  */
 public class Cliente {
     
-    //nome,equipamento,contacto,entrada,pagamento_caucao
+    //nome,equipamento,contacto,orcamento,pagamento_caucao
     
     private int cliente_id;
     private String nome;
     private String equipamento;
     private int contacto;
-    private double entrada;
+    private double orcamento;
     private double pagamento_caucao;
     //private java.sql.Date date;
     private DBAccessObj dbo;
@@ -58,12 +58,12 @@ public class Cliente {
         this.contacto = contacto;
     }
 
-    public double getEntrada() {
-        return entrada;
+    public double getOrcamento() {
+        return orcamento;
     }
 
-    public void setEntrada(double entrada) {
-        this.entrada = entrada;
+    public void setOrcamento(double orcamento) {
+        this.orcamento = orcamento;
     }
 
     public double getPagamento_caucao() {
@@ -84,17 +84,17 @@ public class Cliente {
         this.dbo.openConnection();
     }
 
-    public Cliente(int cliente_id, String nome, String equipamento, int contacto, double entrada, double pagamento_caucao) {
+    public Cliente(int cliente_id, String nome, String equipamento, int contacto, double orcamento, double pagamento_caucao) {
         this.cliente_id = cliente_id;
         this.nome = nome;
         this.equipamento = equipamento;
         this.contacto = contacto;
-        this.entrada = entrada;
+        this.orcamento = orcamento;
         this.pagamento_caucao = pagamento_caucao;
     }
     
     public void create() throws SQLException{
-        String sqlCommand = "INSERT INTO Cliente (nome,equipamento,contacto,entrada,pagamento_caucao) VALUES('" + this.nome + "', '" + this.equipamento + "', " + this.contacto + ", " + this.entrada + ", " + this.pagamento_caucao + ")";
+        String sqlCommand = "INSERT INTO Cliente (nome,equipamento,contacto,orcamento,pagamento_caucao) VALUES('" + this.nome + "', '" + this.equipamento + "', " + this.contacto + ", " + this.orcamento + ", " + this.pagamento_caucao + ")";
         
         
         this.dbo.executeSQL(sqlCommand);
@@ -102,7 +102,7 @@ public class Cliente {
     }
 
     public void retrieve(int id) throws SQLException{
-        String sqlCommand =  "SELECT nome,equipamento,contacto,entrada,pagamento_caucao FROM Cliente WHERE cliente_id = " + id + "";
+        String sqlCommand =  "SELECT * FROM Cliente WHERE cliente_id = " + id + "";
         ResultSet cliente;
 
         //this.dbo.beginTran();
@@ -113,7 +113,7 @@ public class Cliente {
              this.nome = cliente.getString("nome");
              this.equipamento = cliente.getString("equipamento");
              this.contacto = cliente.getInt("contacto");
-             this.entrada = cliente.getDouble("entrada");
+             this.orcamento = cliente.getDouble("orcamento");
              this.pagamento_caucao = cliente.getDouble("pagamento_caucao");
         }
 
@@ -121,7 +121,7 @@ public class Cliente {
     }
     
     public static ResultSet retrieveAllClientes(DBAccessObj dbo) throws SQLException{
-        String sqlCommand =  "SELECT nome,equipamento,contacto,entrada,pagamento_caucao FROM Cliente";
+        String sqlCommand =  "SELECT * FROM Cliente";
         ResultSet clientes;
 
         dbo.openConnection();
@@ -134,8 +134,8 @@ public class Cliente {
     
 
     public void update() {
-        //nome,equipamento,contacto,entrada,pagamento_caucao
-        String sqlCommand = "UPDATE Cliente SET nome = '" + this.nome + "', equipamento = '" + this.equipamento + "', contacto = '" + this.contacto + "', entrada = '" + this.entrada + "', pagamento_caucao = '" + this.pagamento_caucao + "' WHERE cliente_id = '" + this.cliente_id + "'";
+        //nome,equipamento,contacto,orcamento,pagamento_caucao
+        String sqlCommand = "UPDATE Cliente SET nome = '" + this.nome + "', equipamento = '" + this.equipamento + "', contacto = '" + this.contacto + "', orcamento = '" + this.orcamento + "', pagamento_caucao = '" + this.pagamento_caucao + "' WHERE cliente_id = '" + this.cliente_id + "'";
         this.dbo.executeSQL(sqlCommand);
         
     }
