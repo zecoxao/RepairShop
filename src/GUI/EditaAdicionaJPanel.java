@@ -9,7 +9,15 @@ import HelperDB.DBAccessObj;
 import ReparacaoBLL.Avaria;
 import ReparacaoBLL.AvariaCliente;
 import ReparacaoBLL.Cliente;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,81 +35,80 @@ import org.jdesktop.application.FrameView;
  *
  * @author zecoxao
  */
-public class EditaAdicionaJPanel extends JPanel {
+public class EditaAdicionaJPanel extends JPanel implements Printable {
 
     private FrameView parent = null;
     private JPanel previousPanel = null;
     private DBAccessObj dbo;
     private int avaria_id;
     private int cliente_id;
-    
+
     /**
      * Creates new form MainJpanel
      */
     public EditaAdicionaJPanel(FrameView parent, JPanel previousPanel, DBAccessObj dbo, int avaria_id, int cliente_id) throws SQLException {
         initComponents();
-        
+
         this.parent = parent;
         this.previousPanel = previousPanel;
         this.dbo = dbo;
-        
-        if(ListAvariaClienteJPanel.id_avaria_maleavel != 0 && ListAvariaClienteJPanel.id_cliente_maleavel != 0 ) {
+
+        if (ListAvariaClienteJPanel.id_avaria_maleavel != 0 && ListAvariaClienteJPanel.id_cliente_maleavel != 0) {
             this.avaria_id = ListAvariaClienteJPanel.id_avaria_maleavel;
-            jTextField15.setText(""+this.avaria_id);
+            jTextField15.setText("" + this.avaria_id);
             this.cliente_id = ListAvariaClienteJPanel.id_cliente_maleavel;
-            jTextField14.setText(""+this.cliente_id);
-            
-            
+            jTextField14.setText("" + this.cliente_id);
+
+
             AvariaCliente ac = new AvariaCliente();
-            ac.retrieve(this.cliente_id,this.avaria_id);
-            
+            ac.retrieve(this.cliente_id, this.avaria_id);
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            
-            
-            
-            
+
+
+
+
             //Ano Mês Dia
             String data_entrega = df.format(ac.getData_entrega());
             String split_data_entrega[] = data_entrega.split("-");
             jTextField8.setText(split_data_entrega[0]);
             jTextField9.setText(split_data_entrega[1]);
             jTextField10.setText(split_data_entrega[2]);
-            
-            try{
-            String data_reparacao = df.format(ac.getData_reparacao());
-            String split_data_reparacao[] = data_reparacao.split("-");
-            jTextField11.setText(split_data_reparacao[0]);
-            jTextField12.setText(split_data_reparacao[1]);
-            jTextField13.setText(split_data_reparacao[2]);
-            }catch(NullPointerException ex){
-                
+
+            try {
+                String data_reparacao = df.format(ac.getData_reparacao());
+                String split_data_reparacao[] = data_reparacao.split("-");
+                jTextField11.setText(split_data_reparacao[0]);
+                jTextField12.setText(split_data_reparacao[1]);
+                jTextField13.setText(split_data_reparacao[2]);
+            } catch (NullPointerException ex) {
             }
-           ListAvariaClienteJPanel.id_avaria_maleavel = 0; 
-           ListAvariaClienteJPanel.id_cliente_maleavel = 0; 
+            ListAvariaClienteJPanel.id_avaria_maleavel = 0;
+            ListAvariaClienteJPanel.id_cliente_maleavel = 0;
         }
-        
-        
-        
-        
-    
+
+
+
+
+
 
         if (avaria_id != 0) {
             this.avaria_id = avaria_id;
-            jTextField15.setText(""+this.avaria_id);
+            jTextField15.setText("" + this.avaria_id);
         }
         if (cliente_id != 0) {
             this.cliente_id = cliente_id;
-            jTextField14.setText(""+this.cliente_id);
+            jTextField14.setText("" + this.cliente_id);
         }
 
-        
+
 
         if (avaria_id != 0) {
             Avaria avaria = new Avaria();
             avaria.retrieve(avaria_id);
 
             jTextField7.setText(avaria.getDescricao());
-            
+
 
             jTextField6.setText(avaria.getDescricao_outro());
         }
@@ -124,6 +131,9 @@ public class EditaAdicionaJPanel extends JPanel {
 
         this.parent = parent;
         this.dbo = dbo;
+    }
+    
+    public EditaAdicionaJPanel(){
     }
 
     /**
@@ -177,6 +187,7 @@ public class EditaAdicionaJPanel extends JPanel {
         jTextField15 = new javax.swing.JTextField();
         jButton11 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
+        jButton13 = new javax.swing.JButton();
 
         jButton2.setText("jButton2");
 
@@ -295,6 +306,13 @@ public class EditaAdicionaJPanel extends JPanel {
             }
         });
 
+        jButton13.setText("Imprimir");
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -303,27 +321,7 @@ public class EditaAdicionaJPanel extends JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
-                        .addGap(212, 212, 212)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(248, 248, 248)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton5, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel3)
@@ -340,12 +338,16 @@ public class EditaAdicionaJPanel extends JPanel {
                                     .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))))
+                                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addGap(18, 18, 18)
+                                .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)))
                         .addGap(100, 100, 100)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
                                 .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,13 +355,13 @@ public class EditaAdicionaJPanel extends JPanel {
                                 .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 274, Short.MAX_VALUE)
                                 .addComponent(jRadioButton1))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel10)
                                     .addComponent(jLabel11))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jTextField6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -370,19 +372,36 @@ public class EditaAdicionaJPanel extends JPanel {
                                         .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 244, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 245, Short.MAX_VALUE)
                                 .addComponent(jRadioButton2))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel8)
                                     .addComponent(jLabel2))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jButton12))
-                                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
+                        .addGap(212, 212, 212)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(248, 248, 248)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton5, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -438,7 +457,9 @@ public class EditaAdicionaJPanel extends JPanel {
                             .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(1, 1, 1))
                     .addComponent(jLabel13))
-                .addGap(37, 37, 37)
+                .addGap(5, 5, 5)
+                .addComponent(jButton13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton3)
@@ -508,11 +529,11 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
     Avaria avaria = new Avaria();
     avaria.setDescricao(jTextField7.getText().toString());
-    
-        avaria.setOutro(jButton1.isSelected()? 1 : 0);
-    
-        
-    
+
+    avaria.setOutro(jButton1.isSelected() ? 1 : 0);
+
+
+
     avaria.setDescricao_outro(jTextField6.getText().toString());
     try {
         avaria.create();
@@ -551,7 +572,7 @@ private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
     this.cliente_id = Integer.parseInt(jTextField14.getText().toString());
-    
+
     Cliente cliente = new Cliente();
     try {
         cliente.retrieve(this.cliente_id);
@@ -567,7 +588,7 @@ private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
 
 private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
     this.avaria_id = Integer.parseInt(jTextField15.getText().toString());
-    
+
     Avaria avaria = new Avaria();
     try {
         avaria.retrieve(this.avaria_id);
@@ -575,7 +596,7 @@ private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         Logger.getLogger(EditaAdicionaJPanel.class.getName()).log(Level.SEVERE, null, ex);
     }
     jTextField7.setText(avaria.getDescricao());
-    
+
 
     jTextField6.setText(avaria.getDescricao_outro());
 }//GEN-LAST:event_jButton12ActionPerformed
@@ -590,7 +611,7 @@ private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        String dateInString = "" + jTextField8.getText().toString() + "-" + jTextField9.getText().toString() + "-" +  jTextField10.getText().toString();
+        String dateInString = "" + jTextField8.getText().toString() + "-" + jTextField9.getText().toString() + "-" + jTextField10.getText().toString();
 
 
 
@@ -611,7 +632,7 @@ private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             ac.setReparacao(1);
             SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
 
-            String dateInString2 = "" + jTextField11.getText().toString() + "-" +  jTextField12.getText().toString() + "-" +  jTextField13.getText().toString();
+            String dateInString2 = "" + jTextField11.getText().toString() + "-" + jTextField12.getText().toString() + "-" + jTextField13.getText().toString();
 
 
 
@@ -636,14 +657,9 @@ private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         ac.create();
     } catch (NullPointerException ex) {
         System.out.println("ERRO: " + ex.getMessage());
-    }
-    
-    catch (SQLException ex) {
+    } catch (SQLException ex) {
         System.out.println("ERRO: " + ex.getMessage());
-    }
-    
-    catch (NumberFormatException ex) {
-        
+    } catch (NumberFormatException ex) {
     }
 
     System.out.println("Ficha criada com sucesso!\n");
@@ -652,24 +668,24 @@ private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
     ListAvariaClienteJPanel painel;
 
-        painel = new ListAvariaClienteJPanel(this.parent, this.dbo);
-        ((RepairShopView) this.parent).switchPanels((JPanel) this, (JPanel) painel);
+    painel = new ListAvariaClienteJPanel(this.parent, this.dbo);
+    ((RepairShopView) this.parent).switchPanels((JPanel) this, (JPanel) painel);
 }//GEN-LAST:event_jButton10ActionPerformed
 
 private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
     try {
         AvariaCliente ac = new AvariaCliente();
-        
-            this.avaria_id = Integer.parseInt(jTextField15.getText().toString());
-            this.cliente_id = Integer.parseInt(jTextField14.getText().toString());
-            ac.setCliente(this.cliente_id);
-            ac.setAvaria(this.avaria_id);
-        
-        
+
+        this.avaria_id = Integer.parseInt(jTextField15.getText().toString());
+        this.cliente_id = Integer.parseInt(jTextField14.getText().toString());
+        ac.setCliente(this.cliente_id);
+        ac.setAvaria(this.avaria_id);
+
+
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        String dateInString = "" + jTextField8.getText().toString() + "-" + jTextField9.getText().toString() + "-" +  jTextField10.getText().toString();
+        String dateInString = "" + jTextField8.getText().toString() + "-" + jTextField9.getText().toString() + "-" + jTextField10.getText().toString();
 
 
 
@@ -686,17 +702,17 @@ private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             e.printStackTrace();
         }
 
-        
-            ac.setReparacao(jRadioButton2.isSelected()? 1 : 0);
-            
-            SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
 
-            String dateInString2=null;
-            
-            if(!jTextField11.getText().toString().isEmpty() && !jTextField12.getText().toString().isEmpty() && !jTextField13.getText().toString().isEmpty()){
-                dateInString2 = "" + jTextField11.getText().toString() + "-" +  jTextField12.getText().toString() + "-" +  jTextField13.getText().toString();
+        ac.setReparacao(jRadioButton2.isSelected() ? 1 : 0);
 
-            
+        SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
+
+        String dateInString2 = null;
+
+        if (!jTextField11.getText().toString().isEmpty() && !jTextField12.getText().toString().isEmpty() && !jTextField13.getText().toString().isEmpty()) {
+            dateInString2 = "" + jTextField11.getText().toString() + "-" + jTextField12.getText().toString() + "-" + jTextField13.getText().toString();
+
+
 
             try {
 
@@ -710,30 +726,30 @@ private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             } catch (ParseException e) {
                 System.out.println("ERRO: " + e.getMessage());
             }
-            
-            } 
-            
+
+        }
+
 
 
         ac.update();
     } catch (NullPointerException ex) {
-        
+    } catch (NumberFormatException ex) {
     }
-    
-    catch (NumberFormatException ex) {
-        
-    }
-    
-    
+
+
 
     System.out.println("Ficha atualizada com sucesso!\n");
 }//GEN-LAST:event_jButton9ActionPerformed
 
+private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+    
+}//GEN-LAST:event_jButton13ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -773,4 +789,25 @@ private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
     // End of variables declaration//GEN-END:variables
+
+    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+        if (pageIndex != 0) {
+            return NO_SUCH_PAGE;
+        }
+        Graphics2D g2 = (Graphics2D) graphics;
+        g2.setFont(new Font("Serif", Font.PLAIN, 14));
+        g2.setPaint(Color.black);
+        // x , y
+        g2.drawString("Nome:" + jTextField5.getText().toString(), 100, 100);
+        g2.drawString("Equipamento:" + jTextField1.getText().toString(), 100, 150);
+        g2.drawString("Contacto:" + jTextField2.getText().toString(), 100, 200);
+        g2.drawString("Orçamento:" + jTextField3.getText().toString(), 100, 250);
+        g2.drawString("Pagamento de Caução:" + jTextField4.getText().toString(), 100, 300);
+        g2.drawString("Descrição da Avaria:" + jTextField7.getText().toString(), 350, 100);
+        String data_entrega = ""+jTextField10.getText().toString()+"-"+jTextField9.getText().toString()+"-"+jTextField8.getText().toString();
+        g2.drawString("Data da Entrega:" + data_entrega, 350, 150);
+        String data_reparacao = ""+jTextField13.getText().toString()+"-"+jTextField12.getText().toString()+"-"+jTextField11.getText().toString();
+        g2.drawString("Data da Reparação:" + data_reparacao, 350, 200);
+        return PAGE_EXISTS;
+    }
 }

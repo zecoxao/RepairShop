@@ -8,9 +8,7 @@
  *
  * Created on 16/Abr/2011, 9:37:37
  */
-
 package GUI;
-
 
 import java.sql.Date;
 import ReparacaoBLL.Avaria;
@@ -20,6 +18,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import ReparacaoBLL.Cliente;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JFrame;
@@ -51,14 +51,14 @@ public class ListAvariaClienteJPanel extends javax.swing.JPanel {
         try {
             ResultSet rsAvariasClientes = AvariaCliente.retrieveAll(new DBAccessObj());
             limparJTableAvarias();
-            if(rsAvariasClientes!=null){
-                javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel)jTable1.getModel();
-                while(rsAvariasClientes.next()){
+            if (rsAvariasClientes != null) {
+                javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+                while (rsAvariasClientes.next()) {
                     int cliente = rsAvariasClientes.getInt("cliente");
                     int avaria = rsAvariasClientes.getInt("avaria");
                     Date data_entrega = rsAvariasClientes.getDate("data_entrega");
                     Date data_reparacao = rsAvariasClientes.getDate("data_reparacao");
-                    model1.addRow(new Object[]{cliente,avaria,data_entrega,data_reparacao});
+                    model1.addRow(new Object[]{cliente, avaria, data_entrega, data_reparacao});
                 }
             }
         } catch (SQLException ex) {
@@ -67,8 +67,8 @@ public class ListAvariaClienteJPanel extends javax.swing.JPanel {
 
     }
 
-    private void limparJTableAvarias(){
-        javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel)jTable1.getModel();
+    private void limparJTableAvarias() {
+        javax.swing.table.DefaultTableModel model1 = (javax.swing.table.DefaultTableModel) jTable1.getModel();
         model1.setRowCount(0);
     }
 
@@ -84,6 +84,7 @@ public class ListAvariaClienteJPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -130,6 +131,14 @@ public class ListAvariaClienteJPanel extends javax.swing.JPanel {
             }
         });
 
+        jButton2.setText("Imprimir");
+        jButton2.setName("jButton2"); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -138,7 +147,10 @@ public class ListAvariaClienteJPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -147,58 +159,81 @@ public class ListAvariaClienteJPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
-        
 }//GEN-LAST:event_jTable1MouseReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        try{
-            this.AvariaID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada,1).toString());
-        this.ClienteID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada,0).toString());
-        id_avaria_maleavel = this.AvariaID;
-        id_cliente_maleavel = this.ClienteID;
-        System.out.println("ID da Avaria:" + this.AvariaID);
-        System.out.println("ID do Cliente:" + this.ClienteID);
-        //
-        EditaAdicionaJPanel painel;
+
         try {
-            painel = new EditaAdicionaJPanel(this.parent, this, this.dbo, this.AvariaID, this.ClienteID);
-            ((RepairShopView)this.parent).switchPanels((JPanel)this, (JPanel)painel);
-        //
-        jTable1.clearSelection();
-        } catch (SQLException ex) {
-            Logger.getLogger(ListAvariaClienteJPanel.class.getName()).log(Level.SEVERE, null, ex);
-            
+            this.AvariaID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada, 1).toString());
+            this.ClienteID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada, 0).toString());
+            id_avaria_maleavel = this.AvariaID;
+            id_cliente_maleavel = this.ClienteID;
+            System.out.println("ID da Avaria:" + this.AvariaID);
+            System.out.println("ID do Cliente:" + this.ClienteID);
+            //
+            EditaAdicionaJPanel painel;
+            try {
+                painel = new EditaAdicionaJPanel(this.parent, this, this.dbo, this.AvariaID, this.ClienteID);
+                ((RepairShopView) this.parent).switchPanels((JPanel) this, (JPanel) painel);
+                //
+                jTable1.clearSelection();
+            } catch (SQLException ex) {
+                Logger.getLogger(ListAvariaClienteJPanel.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
         }
-        } catch (ArrayIndexOutOfBoundsException e){
-            
-        }
-        
+
         //
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
     // TODO add your handling code here:
-        if(jTable1.getSelectedRow() < 0){
-            this.linhaSeleccionada = -1;
-        }
-        else{
-            this.linhaSeleccionada = jTable1.getSelectedRow();
-        }
+    if (jTable1.getSelectedRow() < 0) {
+        this.linhaSeleccionada = -1;
+    } else {
+        this.linhaSeleccionada = jTable1.getSelectedRow();
+    }
 }//GEN-LAST:event_jTable1MouseClicked
 
+private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    PrinterJob pj = PrinterJob.getPrinterJob();
 
+    try {
+        this.AvariaID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada, 1).toString());
+        this.ClienteID = Integer.parseInt(jTable1.getModel().getValueAt(linhaSeleccionada, 0).toString());
+        id_avaria_maleavel = this.AvariaID;
+        id_cliente_maleavel = this.ClienteID;
+        System.out.println("ID da Avaria:" + this.AvariaID);
+        System.out.println("ID do Cliente:" + this.ClienteID);
+        try {
+            pj.setPrintable(new EditaAdicionaJPanel(this.parent, this, this.dbo, this.AvariaID, this.ClienteID));
+        } catch (SQLException ex) {
+            Logger.getLogger(ListAvariaClienteJPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (pj.printDialog()) {
+            try {
+                pj.print();
+            } catch (PrinterException e) {
+                System.out.println(e);
+            }
+        }
+    } catch (ArrayIndexOutOfBoundsException e) {
+    }
+}//GEN-LAST:event_jButton2ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
-
 }
