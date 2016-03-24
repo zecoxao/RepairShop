@@ -132,8 +132,8 @@ public class EditaAdicionaJPanel extends JPanel implements Printable {
         this.parent = parent;
         this.dbo = dbo;
     }
-    
-    public EditaAdicionaJPanel(){
+
+    public EditaAdicionaJPanel() {
     }
 
     /**
@@ -742,7 +742,6 @@ private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton9ActionPerformed
 
 private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-    
 }//GEN-LAST:event_jButton13ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -803,11 +802,22 @@ private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         g2.drawString("Contacto:" + jTextField2.getText().toString(), 100, 200);
         g2.drawString("Orçamento:" + jTextField3.getText().toString(), 100, 250);
         g2.drawString("Pagamento de Caução:" + jTextField4.getText().toString(), 100, 300);
-        g2.drawString("Descrição da Avaria:" + jTextField7.getText().toString(), 350, 100);
-        String data_entrega = ""+jTextField10.getText().toString()+"-"+jTextField9.getText().toString()+"-"+jTextField8.getText().toString();
+        if (!jTextField7.getText().toString().isEmpty()) {
+            g2.drawString("Descrição da Avaria:" + jTextField7.getText().toString(), 350, 100);
+        } else {
+            g2.drawString("Descrição da Avaria:" + jTextField6.getText().toString(), 350, 100);
+        }
+        String data_entrega = "" + jTextField10.getText().toString() + "-" + jTextField9.getText().toString() + "-" + jTextField8.getText().toString();
         g2.drawString("Data da Entrega:" + data_entrega, 350, 150);
-        String data_reparacao = ""+jTextField13.getText().toString()+"-"+jTextField12.getText().toString()+"-"+jTextField11.getText().toString();
+        String data_reparacao = "" + jTextField13.getText().toString() + "-" + jTextField12.getText().toString() + "-" + jTextField11.getText().toString();
         g2.drawString("Data da Reparação:" + data_reparacao, 350, 200);
+        g2.drawString("Não nos responsabilizamos por avarias não relatadas pelo cliente de que nada ", 100, 350);
+        g2.drawString("tenham a ver com a reparação", 100, 400);
+        g2.drawString("Quando a reparação for efectuada será enviado um sms para o contacto do cliente,", 100, 450);
+        g2.drawString("se este não levantar o equipamento no prazo de sete dias o estabelecimento", 100, 500);
+        g2.drawString("poderá cobrar aluguer de espaço de armazenamento por uma taxa de 2€/dia", 100, 550);
+        g2.drawString("         O CLIENTE                                          O RESPONSÁVEL  ", 100, 600);
+        g2.drawString("___________________________       ___________________________", 100, 650);
         return PAGE_EXISTS;
     }
 }
