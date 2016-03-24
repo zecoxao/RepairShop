@@ -8,7 +8,7 @@ cliente_id int primary key not null,
 nome varchar(255) not null,
 equipamento varchar(255) not null,
 contacto number(9) not null,
-entrada number(6,2) not null,
+orcamento number(6,2) not null,
 pagamento_caucao number(6,2) not null
 );
 
