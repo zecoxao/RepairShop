@@ -14,10 +14,13 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -793,31 +797,72 @@ private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
         if (pageIndex != 0) {
             return NO_SUCH_PAGE;
         }
+        BufferedImage img;
+        try {
+            img = ImageIO.read(new File("C:\\pic\\euarranjo.jpg"));
+            graphics.drawImage(img, 25, 25, null);
+        } catch (IOException ex) {
+            Logger.getLogger(EditaAdicionaJPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
         Graphics2D g2 = (Graphics2D) graphics;
-        g2.setFont(new Font("Serif", Font.PLAIN, 14));
+        g2.setFont(new Font("Serif", Font.PLAIN, 12));
         g2.setPaint(Color.black);
         // x , y
-        g2.drawString("Nome:" + jTextField5.getText().toString(), 100, 100);
+        g2.drawString("ID da Avaria:" + jTextField15.getText().toString(), 100, 100);
+        g2.drawString("Nome:" + jTextField5.getText().toString(), 100, 125);
         g2.drawString("Equipamento:" + jTextField1.getText().toString(), 100, 150);
-        g2.drawString("Contacto:" + jTextField2.getText().toString(), 100, 200);
-        g2.drawString("Orçamento:" + jTextField3.getText().toString(), 100, 250);
-        g2.drawString("Pagamento de Caução:" + jTextField4.getText().toString(), 100, 300);
+        g2.drawString("Contacto:" + jTextField2.getText().toString(), 100, 175);
+        g2.drawString("Orçamento:" + jTextField3.getText().toString(), 100, 200);
+        g2.drawString("Pagamento de Caução:" + jTextField4.getText().toString(), 100, 225);
         if (!jTextField7.getText().toString().isEmpty()) {
-            g2.drawString("Descrição da Avaria:" + jTextField7.getText().toString(), 350, 100);
+            g2.drawString("Descrição da Avaria:" + jTextField7.getText().toString(), 350, 125);
         } else {
-            g2.drawString("Descrição da Avaria:" + jTextField6.getText().toString(), 350, 100);
+            g2.drawString("Descrição da Avaria:" + jTextField6.getText().toString(), 350, 125);
         }
         String data_entrega = "" + jTextField10.getText().toString() + "-" + jTextField9.getText().toString() + "-" + jTextField8.getText().toString();
         g2.drawString("Data da Entrega:" + data_entrega, 350, 150);
         String data_reparacao = "" + jTextField13.getText().toString() + "-" + jTextField12.getText().toString() + "-" + jTextField11.getText().toString();
-        g2.drawString("Data da Reparação:" + data_reparacao, 350, 200);
-        g2.drawString("Não nos responsabilizamos por avarias não relatadas pelo cliente de que nada ", 100, 350);
-        g2.drawString("tenham a ver com a reparação", 100, 400);
-        g2.drawString("Quando a reparação for efectuada será enviado um sms para o contacto do cliente,", 100, 450);
-        g2.drawString("se este não levantar o equipamento no prazo de sete dias o estabelecimento", 100, 500);
-        g2.drawString("poderá cobrar aluguer de espaço de armazenamento por uma taxa de 2€/dia", 100, 550);
-        g2.drawString("         O CLIENTE                                          O RESPONSÁVEL  ", 100, 600);
-        g2.drawString("___________________________       ___________________________", 100, 650);
+        //g2.drawString("Data da Reparação:" + data_reparacao, 350, 150);
+        g2.setFont(new Font("Serif", Font.PLAIN, 8));
+        g2.drawString("Não nos responsabilizamos por avarias não relatadas pelo cliente de que nada tenham a ver com a reparação", 100, 250);
+        g2.drawString("Quando a reparação for efectuada será enviado um sms para o contacto do cliente,se este não levantar o equipamento no prazo de sete dias", 100, 275);
+        g2.drawString("o estabelecimento poderá cobrar aluguer de espaço de armazenamento por uma taxa de 2€/dia", 100, 300);
+        //g2.drawString("", 100, 300);
+        //g2.drawString("", 100, 325);
+        g2.setFont(new Font("Serif", Font.PLAIN, 12));
+        g2.drawString("         O CLIENTE                                          O RESPONSÁVEL  ", 100, 375);
+        g2.drawString("___________________________       ___________________________", 100, 400);
+
+
+
+
+        g2.drawString("ID da Avaria:" + jTextField15.getText().toString(), 100, 475);
+        g2.drawString("Nome:" + jTextField5.getText().toString(), 100, 500);
+        g2.drawString("Equipamento:" + jTextField1.getText().toString(), 100, 525);
+        g2.drawString("Contacto:" + jTextField2.getText().toString(), 100, 550);
+        g2.drawString("Orçamento:" + jTextField3.getText().toString(), 100, 575);
+        g2.drawString("Pagamento de Caução:" + jTextField4.getText().toString(), 100, 600);
+        if (!jTextField7.getText().toString().isEmpty()) {
+            g2.drawString("Descrição da Avaria:" + jTextField7.getText().toString(), 350, 475);
+        } else {
+            g2.drawString("Descrição da Avaria:" + jTextField6.getText().toString(), 350, 475);
+        }
+        String data_entrega2 = "" + jTextField10.getText().toString() + "-" + jTextField9.getText().toString() + "-" + jTextField8.getText().toString();
+        g2.drawString("Data da Entrega:" + data_entrega2, 350, 500);
+        String data_reparacao2 = "" + jTextField13.getText().toString() + "-" + jTextField12.getText().toString() + "-" + jTextField11.getText().toString();
+        //g2.drawString("Data da Reparação:" + data_reparacao, 350, 150);
+        g2.setFont(new Font("Serif", Font.PLAIN, 8));
+        g2.drawString("Não nos responsabilizamos por avarias não relatadas pelo cliente de que nada tenham a ver com a reparação", 100, 625);
+        g2.drawString("Quando a reparação for efectuada será enviado um sms para o contacto do cliente, se este não levantar o equipamento no prazo de sete dias ", 100, 650);
+        g2.drawString("o estabelecimento poderá cobrar aluguer de espaço de armazenamento por uma taxa de 2€/dia", 100, 675);
+        //g2.drawString("", 100, 675);
+        //g2.drawString("", 100, 700);
+        g2.setFont(new Font("Serif", Font.PLAIN, 12));
+        g2.drawString("         O CLIENTE                                          O RESPONSÁVEL  ", 100, 750);
+        g2.drawString("___________________________       ___________________________", 100, 775);
         return PAGE_EXISTS;
     }
 }
