@@ -1,7 +1,6 @@
 /*
  * RepairShopView.java
  */
-
 package repairshop;
 
 import java.awt.Color;
@@ -10,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
+import javax.swing.table.TableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -25,19 +25,32 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
+import javax.persistence.EntityManager;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.PersistenceContext;
 import javax.persistence.RollbackException;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableRowSorter;
+import javax.swing.text.TextAction;
+import oracle.toplink.essentials.sessions.Session;
 import org.jdesktop.beansbinding.AbstractBindingListener;
 import org.jdesktop.beansbinding.Binding;
 import org.jdesktop.beansbinding.PropertyStateEvent;
@@ -46,7 +59,7 @@ import org.jdesktop.beansbinding.PropertyStateEvent;
  * The application's main frame.
  */
 public class RepairShopView extends FrameView {
-    
+
     private int linhaSeleccionadaMaster = -1;
     private int linhaSeleccionadaDetail = -1;
     public static String cliente_id;
@@ -61,30 +74,39 @@ public class RepairShopView extends FrameView {
     public static String data_entrega;
     
     
+    
+   
+
     public RepairShopView(SingleFrameApplication app) {
         super(app);
 
         initComponents();
 
+        
+        
+        
+
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
         int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
-	messageTimer = new Timer(messageTimeout, new ActionListener() {
+        messageTimer = new Timer(messageTimeout, new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 statusMessageLabel.setText("");
             }
         });
-	messageTimer.setRepeats(false);
+        messageTimer.setRepeats(false);
         int busyAnimationRate = resourceMap.getInteger("StatusBar.busyAnimationRate");
         for (int i = 0; i < busyIcons.length; i++) {
             busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
         }
         busyIconTimer = new Timer(busyAnimationRate, new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
                 statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
             }
-        }); 
+        });
         idleIcon = resourceMap.getIcon("StatusBar.idleIcon");
         statusAnimationLabel.setIcon(idleIcon);
         progressBar.setVisible(false);
@@ -92,6 +114,7 @@ public class RepairShopView extends FrameView {
         // connecting action tasks to status bar via TaskMonitor
         TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
         taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 String propertyName = evt.getPropertyName();
                 if ("started".equals(propertyName)) {
@@ -108,11 +131,11 @@ public class RepairShopView extends FrameView {
                     progressBar.setVisible(false);
                     progressBar.setValue(0);
                 } else if ("message".equals(propertyName)) {
-                    String text = (String)(evt.getNewValue());
+                    String text = (String) (evt.getNewValue());
                     statusMessageLabel.setText((text == null) ? "" : text);
                     messageTimer.restart();
                 } else if ("progress".equals(propertyName)) {
-                    int value = (Integer)(evt.getNewValue());
+                    int value = (Integer) (evt.getNewValue());
                     progressBar.setVisible(true);
                     progressBar.setIndeterminate(false);
                     progressBar.setValue(value);
@@ -122,20 +145,23 @@ public class RepairShopView extends FrameView {
 
         // tracking table selection
         masterTable.getSelectionModel().addListSelectionListener(
-            new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e) {
-                    firePropertyChange("recordSelected", !isRecordSelected(), isRecordSelected());
-                }
-            });
+                new ListSelectionListener() {
+
+                    public void valueChanged(ListSelectionEvent e) {
+                        firePropertyChange("recordSelected", !isRecordSelected(), isRecordSelected());
+                    }
+                });
         detailTable.getSelectionModel().addListSelectionListener(
-            new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e) {
-                    firePropertyChange("detailRecordSelected", !isDetailRecordSelected(), isDetailRecordSelected());
-                }
-            }); 
+                new ListSelectionListener() {
+
+                    public void valueChanged(ListSelectionEvent e) {
+                        firePropertyChange("detailRecordSelected", !isDetailRecordSelected(), isDetailRecordSelected());
+                    }
+                });
 
         // tracking changes to save
         bindingGroup.addBindingListener(new AbstractBindingListener() {
+
             @Override
             public void targetChanged(Binding binding, PropertyStateEvent event) {
                 // save action observes saveNeeded property
@@ -146,7 +172,6 @@ public class RepairShopView extends FrameView {
         // have a transaction started
         entityManager.getTransaction().begin();
     }
-
     
     
 
@@ -164,7 +189,7 @@ public class RepairShopView extends FrameView {
     public boolean isRecordSelected() {
         return masterTable.getSelectedRow() != -1;
     }
-    
+
     public boolean isDetailRecordSelected() {
         return detailTable.getSelectedRow() != -1;
     }
@@ -174,7 +199,7 @@ public class RepairShopView extends FrameView {
         repairshop.Cliente c = new repairshop.Cliente();
         entityManager.persist(c);
         list.add(c);
-        int row = list.size()-1;
+        int row = list.size() - 1;
         masterTable.setRowSelectionInterval(row, row);
         masterTable.scrollRectToVisible(masterTable.getCellRect(row, 0, true));
         setSaveNeeded(true);
@@ -184,7 +209,7 @@ public class RepairShopView extends FrameView {
     public void deleteRecord() {
         int[] selected = masterTable.getSelectedRows();
         List<repairshop.Cliente> toRemove = new ArrayList<repairshop.Cliente>(selected.length);
-        for (int idx=0; idx<selected.length; idx++) {
+        for (int idx = 0; idx < selected.length; idx++) {
             repairshop.Cliente c = list.get(masterTable.convertRowIndexToModel(selected[idx]));
             toRemove.add(c);
             entityManager.remove(c);
@@ -192,7 +217,7 @@ public class RepairShopView extends FrameView {
         list.removeAll(toRemove);
         setSaveNeeded(true);
     }
-    
+
     @Action(enabledProperty = "recordSelected")
     public void newDetailRecord() {
         int index = masterTable.getSelectedRow();
@@ -200,7 +225,7 @@ public class RepairShopView extends FrameView {
         Collection<repairshop.Ficha> fs = c.getFichaList();
         if (fs == null) {
             fs = new LinkedList<repairshop.Ficha>();
-            c.setFichaList((List)fs);
+            c.setFichaList((List) fs);
         }
         repairshop.Ficha f = new repairshop.Ficha();
         entityManager.persist(f);
@@ -208,7 +233,7 @@ public class RepairShopView extends FrameView {
         fs.add(f);
         masterTable.clearSelection();
         masterTable.setRowSelectionInterval(index, index);
-        int row = fs.size()-1;
+        int row = fs.size() - 1;
         detailTable.setRowSelectionInterval(row, row);
         detailTable.scrollRectToVisible(detailTable.getCellRect(row, 0, true));
         setSaveNeeded(true);
@@ -221,11 +246,13 @@ public class RepairShopView extends FrameView {
         Collection<repairshop.Ficha> fs = c.getFichaList();
         int[] selected = detailTable.getSelectedRows();
         List<repairshop.Ficha> toRemove = new ArrayList<repairshop.Ficha>(selected.length);
-        for (int idx=0; idx<selected.length; idx++) {
+        for (int idx = 0; idx < selected.length; idx++) {
             selected[idx] = detailTable.convertRowIndexToModel(selected[idx]);
             int count = 0;
             Iterator<repairshop.Ficha> iter = fs.iterator();
-            while (count++ < selected[idx]) iter.next();
+            while (count++ < selected[idx]) {
+                iter.next();
+            }
             repairshop.Ficha f = iter.next();
             toRemove.add(f);
             entityManager.remove(f);
@@ -241,13 +268,14 @@ public class RepairShopView extends FrameView {
         return new SaveTask(getApplication());
     }
 
-    
-
     private class SaveTask extends Task {
+
         SaveTask(org.jdesktop.application.Application app) {
             super(app);
         }
-        @Override protected Void doInBackground() {
+
+        @Override
+        protected Void doInBackground() {
             try {
                 entityManager.getTransaction().commit();
                 entityManager.getTransaction().begin();
@@ -263,7 +291,9 @@ public class RepairShopView extends FrameView {
             }
             return null;
         }
-        @Override protected void finished() {
+
+        @Override
+        protected void finished() {
             setSaveNeeded(false);
         }
     }
@@ -276,15 +306,18 @@ public class RepairShopView extends FrameView {
      */
     @Action
     public Task refresh() {
-       return new RefreshTask(getApplication());
+        return new RefreshTask(getApplication());
     }
 
     private class RefreshTask extends Task {
+
         RefreshTask(org.jdesktop.application.Application app) {
             super(app);
         }
+
         @SuppressWarnings("unchecked")
-        @Override protected Void doInBackground() {
+        @Override
+        protected Void doInBackground() {
             try {
                 setProgress(0, 0, 4);
                 setMessage("Rolling back the current changes...");
@@ -309,10 +342,13 @@ public class RepairShopView extends FrameView {
                 Thread.sleep(150L); // remove for real app
                 list.clear();
                 list.addAll(data);
-            } catch(InterruptedException ignore) { }
+            } catch (InterruptedException ignore) {
+            }
             return null;
         }
-        @Override protected void finished() {
+
+        @Override
+        protected void finished() {
             setMessage("Done.");
             setSaveNeeded(false);
         }
@@ -327,6 +363,8 @@ public class RepairShopView extends FrameView {
         }
         RepairShopApp.getApplication().show(aboutBox);
     }
+
+    
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -350,6 +388,10 @@ public class RepairShopView extends FrameView {
         deleteDetailButton = new javax.swing.JButton();
         newDetailButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem newRecordMenuItem = new javax.swing.JMenuItem();
@@ -391,19 +433,25 @@ public class RepairShopView extends FrameView {
         columnBinding.setColumnName("Bi");
         columnBinding.setColumnClass(Integer.class);
         bindingGroup.addBinding(jTableBinding);
-
+        jTableBinding.bind();
         masterTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 masterTableMouseClicked(evt);
             }
         });
         masterScrollPane.setViewportView(masterTable);
+        masterTable.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("masterTable.columnModel.title0")); // NOI18N
+        masterTable.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("masterTable.columnModel.title1")); // NOI18N
+        masterTable.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("masterTable.columnModel.title2")); // NOI18N
+        masterTable.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("masterTable.columnModel.title3")); // NOI18N
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(repairshop.RepairShopApp.class).getContext().getActionMap(RepairShopView.class, this);
         newButton.setAction(actionMap.get("newRecord")); // NOI18N
+        newButton.setText(resourceMap.getString("newButton.text")); // NOI18N
         newButton.setName("newButton"); // NOI18N
 
         deleteButton.setAction(actionMap.get("deleteRecord")); // NOI18N
+        deleteButton.setText(resourceMap.getString("deleteButton.text")); // NOI18N
         deleteButton.setName("deleteButton"); // NOI18N
 
         detailScrollPane.setName("detailScrollPane"); // NOI18N
@@ -447,15 +495,19 @@ public class RepairShopView extends FrameView {
         detailTable.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("detailTable.columnModel.title5")); // NOI18N
 
         saveButton.setAction(actionMap.get("save")); // NOI18N
+        saveButton.setText(resourceMap.getString("saveButton.text")); // NOI18N
         saveButton.setName("saveButton"); // NOI18N
 
         refreshButton.setAction(actionMap.get("refresh")); // NOI18N
+        refreshButton.setText(resourceMap.getString("refreshButton.text")); // NOI18N
         refreshButton.setName("refreshButton"); // NOI18N
 
         deleteDetailButton.setAction(actionMap.get("deleteDetailRecord")); // NOI18N
+        deleteDetailButton.setText(resourceMap.getString("deleteDetailButton.text")); // NOI18N
         deleteDetailButton.setName("deleteDetailButton"); // NOI18N
 
         newDetailButton.setAction(actionMap.get("newDetailRecord")); // NOI18N
+        newDetailButton.setText(resourceMap.getString("newDetailButton.text")); // NOI18N
         newDetailButton.setName("newDetailButton"); // NOI18N
 
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
@@ -466,18 +518,46 @@ public class RepairShopView extends FrameView {
             }
         });
 
+        jTextField1.setName("jTextField1"); // NOI18N
+
+        jTextField2.setName("jTextField2"); // NOI18N
+
+        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
+        jButton2.setName("jButton2"); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
+        jButton3.setName("jButton3"); // NOI18N
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(newButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addContainerGap(74, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(newDetailButton)
@@ -487,12 +567,8 @@ public class RepairShopView extends FrameView {
                         .addComponent(refreshButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(saveButton))
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(masterScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE))
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(detailScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)))
+                    .addComponent(masterScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+                    .addComponent(detailScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -508,7 +584,9 @@ public class RepairShopView extends FrameView {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(deleteButton)
-                    .addComponent(newButton))
+                    .addComponent(newButton)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(detailScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
                 .addGap(1, 1, 1)
@@ -517,7 +595,9 @@ public class RepairShopView extends FrameView {
                     .addComponent(refreshButton)
                     .addComponent(deleteDetailButton)
                     .addComponent(newDetailButton)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3))
                 .addContainerGap())
         );
 
@@ -532,10 +612,12 @@ public class RepairShopView extends FrameView {
         });
 
         newRecordMenuItem.setAction(actionMap.get("newRecord")); // NOI18N
+        newRecordMenuItem.setText(resourceMap.getString("newRecordMenuItem.text")); // NOI18N
         newRecordMenuItem.setName("newRecordMenuItem"); // NOI18N
         fileMenu.add(newRecordMenuItem);
 
         deleteRecordMenuItem.setAction(actionMap.get("deleteRecord")); // NOI18N
+        deleteRecordMenuItem.setText(resourceMap.getString("deleteRecordMenuItem.text")); // NOI18N
         deleteRecordMenuItem.setName("deleteRecordMenuItem"); // NOI18N
         fileMenu.add(deleteRecordMenuItem);
 
@@ -543,10 +625,12 @@ public class RepairShopView extends FrameView {
         fileMenu.add(jSeparator1);
 
         saveMenuItem.setAction(actionMap.get("save")); // NOI18N
+        saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
         saveMenuItem.setName("saveMenuItem"); // NOI18N
         fileMenu.add(saveMenuItem);
 
         refreshMenuItem.setAction(actionMap.get("refresh")); // NOI18N
+        refreshMenuItem.setText(resourceMap.getString("refreshMenuItem.text")); // NOI18N
         refreshMenuItem.setName("refreshMenuItem"); // NOI18N
         fileMenu.add(refreshMenuItem);
 
@@ -554,6 +638,7 @@ public class RepairShopView extends FrameView {
         fileMenu.add(jSeparator2);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
+        exitMenuItem.setText(resourceMap.getString("exitMenuItem.text")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
         fileMenu.add(exitMenuItem);
 
@@ -563,6 +648,7 @@ public class RepairShopView extends FrameView {
         helpMenu.setName("helpMenu"); // NOI18N
 
         aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
+        aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
         aboutMenuItem.setName("aboutMenuItem"); // NOI18N
         helpMenu.add(aboutMenuItem);
 
@@ -583,11 +669,11 @@ public class RepairShopView extends FrameView {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 603, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusAnimationLabel)
@@ -613,46 +699,42 @@ public class RepairShopView extends FrameView {
     }// </editor-fold>//GEN-END:initComponents
 
 private void masterTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_masterTableMouseClicked
-    
-    try{
-        if(masterTable.getSelectedRow() < 0){
+
+    try {
+        if (masterTable.getSelectedRow() < 0) {
             this.linhaSeleccionadaMaster = -1;
-        }
-        else{
+        } else {
             this.linhaSeleccionadaMaster = masterTable.getSelectedRow();
         }
         cliente_id = masterTable.getValueAt(this.linhaSeleccionadaMaster, 0).toString();
         nome = masterTable.getValueAt(this.linhaSeleccionadaMaster, 1).toString();
         contacto = masterTable.getValueAt(this.linhaSeleccionadaMaster, 2).toString();
         bi = masterTable.getValueAt(this.linhaSeleccionadaMaster, 3).toString();
-        System.out.println("Dados do Cliente:" + cliente_id + " , " + nome + " , " + contacto+ " , " + bi );
-    }catch(NullPointerException e){
-        
+        System.out.println("Dados do Cliente:" + cliente_id + " , " + nome + " , " + contacto + " , " + bi);
+    } catch (NullPointerException e) {
     }
-    
-    
-    
+
+
+
 }//GEN-LAST:event_masterTableMouseClicked
 
 private void detailTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_detailTableMouseClicked
 
-    try{
-    if(detailTable.getSelectedRow() < 0){
+    try {
+        if (detailTable.getSelectedRow() < 0) {
             this.linhaSeleccionadaDetail = -1;
-        }
-        else{
+        } else {
             this.linhaSeleccionadaDetail = detailTable.getSelectedRow();
         }
-    ficha_id = detailTable.getValueAt(this.linhaSeleccionadaDetail, 0).toString();
-    equipamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 1).toString();
-    avaria = detailTable.getValueAt(this.linhaSeleccionadaDetail, 2).toString();
-    orcamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 3).toString();
-    caucao = detailTable.getValueAt(this.linhaSeleccionadaDetail, 4).toString();
-    data_entrega = detailTable.getValueAt(this.linhaSeleccionadaDetail, 5).toString();
-    
-    System.out.println("Dados da Ficha:" + ficha_id + " , " + equipamento + " , " + avaria + " , " + orcamento + " , " + caucao +" , " + data_entrega );
-    }catch(NullPointerException e){
-        
+        ficha_id = detailTable.getValueAt(this.linhaSeleccionadaDetail, 0).toString();
+        equipamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 1).toString();
+        avaria = detailTable.getValueAt(this.linhaSeleccionadaDetail, 2).toString();
+        orcamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 3).toString();
+        caucao = detailTable.getValueAt(this.linhaSeleccionadaDetail, 4).toString();
+        data_entrega = detailTable.getValueAt(this.linhaSeleccionadaDetail, 5).toString();
+
+        System.out.println("Dados da Ficha:" + ficha_id + " , " + equipamento + " , " + avaria + " , " + orcamento + " , " + caucao + " , " + data_entrega);
+    } catch (NullPointerException e) {
     }
 }//GEN-LAST:event_detailTableMouseClicked
 
@@ -661,16 +743,48 @@ private void fileMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:ev
 }//GEN-LAST:event_fileMenuMouseClicked
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-PrinterJob pj = PrinterJob.getPrinterJob();
+    PrinterJob pj = PrinterJob.getPrinterJob();
     pj.setPrintable(new Impressora());
     if (pj.printDialog()) {
-      try {
-        pj.print();
-      } catch (PrinterException e) {
-        System.out.println(e);
-      }
+        try {
+            pj.print();
+        } catch (PrinterException e) {
+            System.out.println(e);
+        }
     }
 }//GEN-LAST:event_jButton1ActionPerformed
+
+private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        TableModel tabela_clientes = (TableModel) masterTable.getModel();
+        final TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tabela_clientes);
+        masterTable.setRowSorter(sorter);
+        String text = jTextField1.getText();
+        if (text.length() == 0){
+            //sorter.setRowFilter(null);
+        } else {
+            try {
+                sorter.setRowFilter(RowFilter.regexFilter(text));
+            } catch(PatternSyntaxException pse) {
+                System.err.println("erro");
+            }
+        }
+}//GEN-LAST:event_jButton2ActionPerformed
+
+private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+TableModel tabela_fichas = (TableModel) detailTable.getModel();
+        final TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tabela_fichas);
+        detailTable.setRowSorter(sorter);
+        String text = jTextField2.getText();
+        if (text.length() == 0){
+            //sorter.setRowFilter(null);
+        } else {
+            try {
+                sorter.setRowFilter(RowFilter.regexFilter(text));
+            } catch(PatternSyntaxException pse) {
+                System.err.println("erro");
+            }
+        }
+}//GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
@@ -679,8 +793,12 @@ PrinterJob pj = PrinterJob.getPrinterJob();
     private javax.swing.JTable detailTable;
     private javax.persistence.EntityManager entityManager;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     private java.util.List<repairshop.Cliente> list;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JScrollPane masterScrollPane;
@@ -697,14 +815,11 @@ PrinterJob pj = PrinterJob.getPrinterJob();
     private javax.swing.JPanel statusPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
-
     private final Timer messageTimer;
     private final Timer busyIconTimer;
     private final Icon idleIcon;
     private final Icon[] busyIcons = new Icon[15];
     private int busyIconIndex = 0;
-
     private JDialog aboutBox;
-
     private boolean saveNeeded;
 }

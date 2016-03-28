@@ -31,7 +31,8 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Cliente.findByClienteId", query = "SELECT c FROM Cliente c WHERE c.clienteId = :clienteId"),
     @NamedQuery(name = "Cliente.findByNome", query = "SELECT c FROM Cliente c WHERE c.nome = :nome"),
     @NamedQuery(name = "Cliente.findByContacto", query = "SELECT c FROM Cliente c WHERE c.contacto = :contacto"),
-    @NamedQuery(name = "Cliente.findByBi", query = "SELECT c FROM Cliente c WHERE c.bi = :bi")})
+    @NamedQuery(name = "Cliente.findByBi", query = "SELECT c FROM Cliente c WHERE c.bi = :bi"),
+    @NamedQuery(name = "Cliente.findByNomeLike",query = "SELECT c FROM Cliente c WHERE c.nome LIKE :nome")})
 public class Cliente implements Serializable {
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);

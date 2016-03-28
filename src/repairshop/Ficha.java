@@ -32,7 +32,8 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Ficha.findByAvaria", query = "SELECT f FROM Ficha f WHERE f.avaria = :avaria"),
     @NamedQuery(name = "Ficha.findByOrcamento", query = "SELECT f FROM Ficha f WHERE f.orcamento = :orcamento"),
     @NamedQuery(name = "Ficha.findByPagamentoCaucao", query = "SELECT f FROM Ficha f WHERE f.pagamentoCaucao = :pagamentoCaucao"),
-    @NamedQuery(name = "Ficha.findByDataEntrega", query = "SELECT f FROM Ficha f WHERE f.dataEntrega = :dataEntrega")})
+    @NamedQuery(name = "Ficha.findByDataEntrega", query = "SELECT f FROM Ficha f WHERE f.dataEntrega = :dataEntrega"),
+    @NamedQuery(name = "Ficha.findByEquipamentoLike",query = "SELECT f FROM Ficha f WHERE f.equipamento LIKE :equipamento")})
 public class Ficha implements Serializable {
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
