@@ -23,6 +23,8 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +74,9 @@ public class RepairShopView extends FrameView {
     public static String orcamento;
     public static String caucao;
     public static String data_entrega;
+    private BigDecimal orcamento_decimal;
+    private BigDecimal caucao_decimal;
+    
     
     
     
@@ -420,10 +425,7 @@ public class RepairShopView extends FrameView {
         masterTable.setName("masterTable"); // NOI18N
 
         org.jdesktop.swingbinding.JTableBinding jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, list, masterTable);
-        org.jdesktop.swingbinding.JTableBinding.ColumnBinding columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${clienteId}"));
-        columnBinding.setColumnName("Cliente Id");
-        columnBinding.setColumnClass(java.math.BigDecimal.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${nome}"));
+        org.jdesktop.swingbinding.JTableBinding.ColumnBinding columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${nome}"));
         columnBinding.setColumnName("Nome");
         columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${contacto}"));
@@ -440,10 +442,9 @@ public class RepairShopView extends FrameView {
             }
         });
         masterScrollPane.setViewportView(masterTable);
-        masterTable.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("masterTable.columnModel.title0")); // NOI18N
-        masterTable.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("masterTable.columnModel.title1")); // NOI18N
-        masterTable.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("masterTable.columnModel.title2")); // NOI18N
-        masterTable.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("masterTable.columnModel.title3")); // NOI18N
+        masterTable.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("masterTable.columnModel.title1")); // NOI18N
+        masterTable.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("masterTable.columnModel.title2")); // NOI18N
+        masterTable.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("masterTable.columnModel.title3")); // NOI18N
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(repairshop.RepairShopApp.class).getContext().getActionMap(RepairShopView.class, this);
         newButton.setAction(actionMap.get("newRecord")); // NOI18N
@@ -460,9 +461,6 @@ public class RepairShopView extends FrameView {
 
         org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${selectedElement.fichaList}");
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, masterTable, eLProperty, detailTable);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${fichaId}"));
-        columnBinding.setColumnName("Ficha Id");
-        columnBinding.setColumnClass(java.math.BigDecimal.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${equipamento}"));
         columnBinding.setColumnName("Equipamento");
         columnBinding.setColumnClass(String.class);
@@ -475,9 +473,6 @@ public class RepairShopView extends FrameView {
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${pagamentoCaucao}"));
         columnBinding.setColumnName("Pagamento Caucao");
         columnBinding.setColumnClass(java.math.BigDecimal.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${dataEntrega}"));
-        columnBinding.setColumnName("Data Entrega");
-        columnBinding.setColumnClass(String.class);
         jTableBinding.setSourceUnreadableValue(java.util.Collections.emptyList());
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
@@ -487,12 +482,10 @@ public class RepairShopView extends FrameView {
             }
         });
         detailScrollPane.setViewportView(detailTable);
-        detailTable.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("detailTable.columnModel.title0")); // NOI18N
-        detailTable.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("detailTable.columnModel.title1")); // NOI18N
-        detailTable.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("detailTable.columnModel.title2")); // NOI18N
-        detailTable.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("detailTable.columnModel.title3")); // NOI18N
-        detailTable.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("detailTable.columnModel.title4")); // NOI18N
-        detailTable.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("detailTable.columnModel.title5")); // NOI18N
+        detailTable.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("detailTable.columnModel.title1")); // NOI18N
+        detailTable.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("detailTable.columnModel.title2")); // NOI18N
+        detailTable.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("detailTable.columnModel.title3")); // NOI18N
+        detailTable.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("detailTable.columnModel.title4")); // NOI18N
 
         saveButton.setAction(actionMap.get("save")); // NOI18N
         saveButton.setText(resourceMap.getString("saveButton.text")); // NOI18N
@@ -706,11 +699,11 @@ private void masterTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST
         } else {
             this.linhaSeleccionadaMaster = masterTable.getSelectedRow();
         }
-        cliente_id = masterTable.getValueAt(this.linhaSeleccionadaMaster, 0).toString();
-        nome = masterTable.getValueAt(this.linhaSeleccionadaMaster, 1).toString();
-        contacto = masterTable.getValueAt(this.linhaSeleccionadaMaster, 2).toString();
-        bi = masterTable.getValueAt(this.linhaSeleccionadaMaster, 3).toString();
-        System.out.println("Dados do Cliente:" + cliente_id + " , " + nome + " , " + contacto + " , " + bi);
+        //cliente_id = masterTable.getValueAt(this.linhaSeleccionadaMaster, 0).toString();
+        nome = masterTable.getValueAt(this.linhaSeleccionadaMaster, 0).toString();
+        contacto = masterTable.getValueAt(this.linhaSeleccionadaMaster, 1).toString();
+        bi = masterTable.getValueAt(this.linhaSeleccionadaMaster, 2).toString();
+        System.out.println("Dados do Cliente:" + "" + " , " + nome + " , " + contacto + " , " + bi);
     } catch (NullPointerException e) {
     }
 
@@ -726,14 +719,26 @@ private void detailTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST
         } else {
             this.linhaSeleccionadaDetail = detailTable.getSelectedRow();
         }
-        ficha_id = detailTable.getValueAt(this.linhaSeleccionadaDetail, 0).toString();
-        equipamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 1).toString();
-        avaria = detailTable.getValueAt(this.linhaSeleccionadaDetail, 2).toString();
-        orcamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 3).toString();
-        caucao = detailTable.getValueAt(this.linhaSeleccionadaDetail, 4).toString();
-        data_entrega = detailTable.getValueAt(this.linhaSeleccionadaDetail, 5).toString();
+        //ficha_id = detailTable.getValueAt(this.linhaSeleccionadaDetail, 0).toString();
+        equipamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 0).toString();
+        avaria = detailTable.getValueAt(this.linhaSeleccionadaDetail, 1).toString();
+        orcamento = detailTable.getValueAt(this.linhaSeleccionadaDetail, 2).toString();
+        caucao = detailTable.getValueAt(this.linhaSeleccionadaDetail, 3).toString();
+        //data_entrega = detailTable.getValueAt(this.linhaSeleccionadaDetail, 5).toString();
+        
+        orcamento_decimal = new BigDecimal(orcamento);
+        caucao_decimal = new BigDecimal(caucao);
+        
+        List <Ficha> fichas = (List <Ficha>) entityManager.createNamedQuery("Ficha.findByRest")
+            .setParameter("equipamento", equipamento)
+                .setParameter("avaria", avaria)
+                .setParameter("orcamento", orcamento_decimal)
+                .setParameter("pagamentoCaucao", caucao_decimal)
+            .getResultList();
+        
+        ficha_id = ""+fichas.get(0).getFichaId();
 
-        System.out.println("Dados da Ficha:" + ficha_id + " , " + equipamento + " , " + avaria + " , " + orcamento + " , " + caucao + " , " + data_entrega);
+        System.out.println("Dados da Ficha:" + ficha_id + " , " + equipamento + " , " + avaria + " , " + orcamento + " , " + caucao + " , " + "");
     } catch (NullPointerException e) {
     }
 }//GEN-LAST:event_detailTableMouseClicked

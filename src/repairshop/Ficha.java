@@ -8,15 +8,21 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
 /**
@@ -28,6 +34,7 @@ import javax.persistence.Transient;
 @NamedQueries({
     @NamedQuery(name = "Ficha.findAll", query = "SELECT f FROM Ficha f"),
     @NamedQuery(name = "Ficha.findByFichaId", query = "SELECT f FROM Ficha f WHERE f.fichaId = :fichaId"),
+    @NamedQuery(name = "Ficha.findByRest", query = "SELECT f FROM Ficha f WHERE f.equipamento = :equipamento AND f.avaria = :avaria AND f.orcamento = :orcamento AND f.pagamentoCaucao = :pagamentoCaucao"),
     @NamedQuery(name = "Ficha.findByEquipamento", query = "SELECT f FROM Ficha f WHERE f.equipamento = :equipamento"),
     @NamedQuery(name = "Ficha.findByAvaria", query = "SELECT f FROM Ficha f WHERE f.avaria = :avaria"),
     @NamedQuery(name = "Ficha.findByOrcamento", query = "SELECT f FROM Ficha f WHERE f.orcamento = :orcamento"),
@@ -40,6 +47,8 @@ public class Ficha implements Serializable {
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Id
+    @SequenceGenerator(name = "SEQ",sequenceName = "zecoxao.ficha_seq",allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "SEQ" )
     @Basic(optional = false)
     @Column(name = "FICHA_ID")
     private BigDecimal fichaId;
@@ -57,7 +66,7 @@ public class Ficha implements Serializable {
     private BigDecimal pagamentoCaucao;
     @Basic(optional = false)
     @Column(name = "DATA_ENTREGA")
-    private String dataEntrega;
+    private String dataEntrega = new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime());
     @JoinColumn(name = "CLIENTE", referencedColumnName = "CLIENTE_ID")
     @ManyToOne(optional = false)
     private Cliente cliente;

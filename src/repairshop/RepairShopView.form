@@ -89,11 +89,6 @@
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title resourceKey="masterTable.columnModel.title0"/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title resourceKey="masterTable.columnModel.title1"/>
                       <Editor/>
                       <Renderer/>
@@ -117,9 +112,6 @@
               </Properties>
               <BindingProperties>
                 <BindingProperty name="elements" source="list" target="masterTable" targetPath="elements" updateStrategy="0" immediately="true">
-                  <Subbinding sourcePath="${clienteId}">
-                    <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="java.math.BigDecimal.class"/>
-                  </Subbinding>
                   <Subbinding sourcePath="${nome}">
                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                   </Subbinding>
@@ -174,11 +166,6 @@
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title resourceKey="detailTable.columnModel.title0"/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title resourceKey="detailTable.columnModel.title1"/>
                       <Editor/>
                       <Renderer/>
@@ -198,11 +185,6 @@
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title resourceKey="detailTable.columnModel.title5"/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                   </TableColumnModel>
                 </Property>
                 <Property name="name" type="java.lang.String" value="detailTable" noResource="true"/>
@@ -215,9 +197,6 @@
                   <Property name="incompletePathValue" type="java.util.List" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                     <Connection code="java.util.Collections.emptyList()" type="code"/>
                   </Property>
-                  <Subbinding sourcePath="${fichaId}">
-                    <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="java.math.BigDecimal.class"/>
-                  </Subbinding>
                   <Subbinding sourcePath="${equipamento}">
                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                   </Subbinding>
@@ -229,9 +208,6 @@
                   </Subbinding>
                   <Subbinding sourcePath="${pagamentoCaucao}">
                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="java.math.BigDecimal.class"/>
-                  </Subbinding>
-                  <Subbinding sourcePath="${dataEntrega}">
-                    <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                   </Subbinding>
                 </BindingProperty>
               </BindingProperties>
